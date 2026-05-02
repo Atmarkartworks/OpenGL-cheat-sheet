@@ -83,7 +83,7 @@ ShaderPass::ShaderPass()
 }
 
 ShaderPass::~ShaderPass() {
-    // program の破棄は外部ポリシーに任せるなら何もしない
+    // If program lifetime is managed externally, do nothing here.
     // glDeleteProgram(program);
 }
 
@@ -123,7 +123,7 @@ FullscreenQuad::~FullscreenQuad() {
 }
 
 bool FullscreenQuad::init() {
-    // 位置 + UV のフルスクリーンクアッド
+    // Fullscreen quad with position + UV.
     // (x, y, u, v)
     const float vertices[] = {
         -1.0f, -1.0f, 0.0f, 0.0f,
@@ -203,7 +203,7 @@ void CompositionNode::execute(const FullscreenQuad& quad) const {
         output->bind();
     } else {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        // viewport は外側で設定している前提でもよい
+        // Viewport can be assumed to be configured by the caller.
     }
 
     shader->use();
@@ -219,7 +219,7 @@ void CompositionNode::execute(const FullscreenQuad& quad) const {
                            extraUnits[i]);
     }
 
-    // ポストエフェクト前提で深度テストはオフにしておくことが多い
+    // Post-process passes typically run with depth testing disabled.
     GLboolean depthEnabled = glIsEnabled(GL_DEPTH_TEST);
     if (depthEnabled) glDisable(GL_DEPTH_TEST);
 

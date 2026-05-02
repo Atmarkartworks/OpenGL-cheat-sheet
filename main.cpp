@@ -28,13 +28,13 @@ int main() {
     graph.add(node);
 
     while (!glfwWindowShouldClose(win)) {
-        // 1. sceneFBO に描画
+        // 1. Render to sceneFBO.
         sceneFBO.bind();
         glClearColor(0.2, 0.3, 0.4, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         sceneFBO.unbind();
 
-        // 2. CompositionGraph 実行
+        // 2. Run CompositionGraph.
         graph.run(quad);
 
         glfwSwapBuffers(win);

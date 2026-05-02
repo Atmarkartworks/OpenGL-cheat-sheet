@@ -1,13 +1,13 @@
 #ifndef COMPOSITION_H
 #define COMPOSITION_H
 
-// 必要に応じて環境に合わせて変更
+// Adjust includes for your environment if needed.
 #include <GL/glew.h>
-// #include <GLES3/gl3.h> など
+// e.g. #include <GLES3/gl3.h>
 
 #include <vector>
 
-// シンプルな RenderTarget: FBO + Color Texture + Depth Renderbuffer
+// Simple RenderTarget: FBO + Color Texture + Depth Renderbuffer
 struct RenderTarget {
     GLuint fbo;
     GLuint texture;
@@ -18,7 +18,7 @@ struct RenderTarget {
     RenderTarget();
     ~RenderTarget();
 
-    // RGBA8 + Depth24 の標準的な FBO を生成
+    // Create a standard RGBA8 + Depth24 FBO.
     bool init(int w, int h);
 
     void destroy();
@@ -27,7 +27,7 @@ struct RenderTarget {
     void unbind();
 };
 
-// シンプルな ShaderPass: Program + テクスチャバインドヘルパ
+// Simple ShaderPass: Program + texture binding helpers.
 struct ShaderPass {
     GLuint program;
 
@@ -36,15 +36,15 @@ struct ShaderPass {
 
     void use() const;
 
-    // sampler2D uniform にテクスチャをバインド
+    // Bind a texture to a sampler2D uniform.
     void setTexture(const char* name, GLuint tex, int unit) const;
 
-    // int / float など最低限
+    // Minimal scalar uniform helpers.
     void setInt(const char* name, int v) const;
     void setFloat(const char* name, float v) const;
 };
 
-// フルスクリーンクアッド描画用ユーティリティ
+// Utility for drawing a fullscreen quad.
 struct FullscreenQuad {
     GLuint vao;
     GLuint vbo;
@@ -58,13 +58,13 @@ struct FullscreenQuad {
     void draw() const;
 };
 
-// 1 パス分: input → output を shader で処理
+// One pass: process input -> output with a shader.
 struct CompositionNode {
-    RenderTarget* input;   // NULL も許容（例: 画面から読む場合など）
+    RenderTarget* input;   // NULL is allowed (e.g., when reading from screen).
     RenderTarget* output;  // NULL = default framebuffer
     ShaderPass*   shader;
 
-    // 追加で複数テクスチャを渡したい場合用の簡易スロット
+    // Simple slots for passing additional textures.
     enum { MAX_EXTRA_TEXTURES = 4 };
     GLuint extraTextures[MAX_EXTRA_TEXTURES];
     const char* extraNames[MAX_EXTRA_TEXTURES];
@@ -78,7 +78,7 @@ struct CompositionNode {
     void execute(const FullscreenQuad& quad) const;
 };
 
-// ノード列を順に実行するだけのシンプルなグラフ
+// Simple graph that executes nodes in sequence.
 struct CompositionGraph {
     std::vector<CompositionNode> nodes;
 
