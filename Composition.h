@@ -87,4 +87,7 @@ struct CompositionGraph {
     void run(const FullscreenQuad& quad) const;
 };
 
+// Build a GL program from vertex/fragment shader source files.
+GLuint createProgram(const char* vertexPath, const char* fragmentPath);
+
 #endif // COMPOSITION_H

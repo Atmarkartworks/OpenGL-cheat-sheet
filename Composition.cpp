@@ -1,5 +1,112 @@
 #include "Composition.h"
 #include <cstring> // memset
+#include <fstream>
+#include <iostream>
+#include <sstream>
+
+namespace {
+
+static bool readTextFile(const char* path, std::string& outText) {
+    std::ifstream file(path, std::ios::in);
+    if (!file) {
+        std::cerr << "Failed to open shader file: " << path << std::endl;
+        return false;
+    }
+
+    std::ostringstream stream;
+    stream << file.rdbuf();
+    outText = stream.str();
+    return true;
+}
+
+static GLuint compileShader(GLenum type, const char* source, const char* debugName) {
+    GLuint shader = glCreateShader(type);
+    if (!shader) {
+        std::cerr << "Failed to create shader: " << debugName << std::endl;
+        return 0;
+    }
+
+    glShaderSource(shader, 1, &source, 0);
+    glCompileShader(shader);
+
+    GLint compiled = GL_FALSE;
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
+    if (compiled == GL_TRUE) return shader;
+
+    GLint logLength = 0;
+    glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logLength);
+    if (logLength > 1) {
+        std::vector<char> logBuffer(logLength);
+        glGetShaderInfoLog(shader, logLength, 0, &logBuffer[0]);
+        std::cerr << "Shader compile error (" << debugName << "):"
+                  << std::endl
+                  << &logBuffer[0] << std::endl;
+    } else {
+        std::cerr << "Shader compile error (" << debugName << ")" << std::endl;
+    }
+
+    glDeleteShader(shader);
+    return 0;
+}
+
+} // namespace
+
+GLuint createProgram(const char* vertexPath, const char* fragmentPath) {
+    std::string vertexSource;
+    std::string fragmentSource;
+
+    if (!readTextFile(vertexPath, vertexSource)) return 0;
+    if (!readTextFile(fragmentPath, fragmentSource)) return 0;
+
+    GLuint vertexShader = compileShader(GL_VERTEX_SHADER,
+                                        vertexSource.c_str(),
+                                        vertexPath);
+    if (!vertexShader) return 0;
+
+    GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER,
+                                          fragmentSource.c_str(),
+                                          fragmentPath);
+    if (!fragmentShader) {
+        glDeleteShader(vertexShader);
+        return 0;
+    }
+
+    GLuint program = glCreateProgram();
+    if (!program) {
+        glDeleteShader(vertexShader);
+        glDeleteShader(fragmentShader);
+        std::cerr << "Failed to create shader program" << std::endl;
+        return 0;
+    }
+
+    glAttachShader(program, vertexShader);
+    glAttachShader(program, fragmentShader);
+    glLinkProgram(program);
+
+    GLint linked = GL_FALSE;
+    glGetProgramiv(program, GL_LINK_STATUS, &linked);
+
+    glDetachShader(program, vertexShader);
+    glDetachShader(program, fragmentShader);
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+
+    if (linked == GL_TRUE) return program;
+
+    GLint logLength = 0;
+    glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logLength);
+    if (logLength > 1) {
+        std::vector<char> logBuffer(logLength);
+        glGetProgramInfoLog(program, logLength, 0, &logBuffer[0]);
+        std::cerr << "Program link error:" << std::endl
+                  << &logBuffer[0] << std::endl;
+    } else {
+        std::cerr << "Program link error" << std::endl;
+    }
+
+    glDeleteProgram(program);
+    return 0;
+}
 
 // ================= RenderTarget =================
 
