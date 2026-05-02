@@ -27,6 +27,12 @@ g++ -std=c++98 main.cpp Composition.cpp -lopengl32 -lglew32 -lglfw3 -o demo.exe
 
 Note: Set up GLEW / GLFW / GLAD according to your environment.
 
+Additional demo sources:
+- `demo.cpp`: Raw RGB image pipeline demo (blur X/Y + GB channel extraction + composite).
+- `demo2.cpp`: Gaussian blur demo with runtime keyboard controls (radius/sigma).
+
+These demos can be built in the same way as `main.cpp` by replacing the source filename.
+
 ## 2. Framework Components
 
 - RenderTarget: Minimal set of FBO + Texture + Depth.
@@ -94,12 +100,18 @@ OpenGL-cheat-sheet/
 |- Composition.h
 |- Composition.cpp
 |- main.cpp
+|- demo.cpp
+|- demo2.cpp
 `- shaders/
    |- fullscreen.vert
    |- passthrough.frag
    |- blurX.frag
    |- blurY.frag
-   `- composite.frag
+    |- composite.frag
+    |- composite-demo.frag
+    |- gbonly.frag
+    |- gaussianX.frag
+    `- gaussianY.frag
 ```
 
 ## 5. License
