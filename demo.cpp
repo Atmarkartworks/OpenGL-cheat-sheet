@@ -55,7 +55,8 @@ int main() {
     ShaderPass shBlurX, shBlurY, shGB, shComposite;
     shBlurX.program     = createProgram("shaders/fullscreen.vert", "shaders/blurX.frag");
     shBlurY.program     = createProgram("shaders/fullscreen.vert", "shaders/blurY.frag");
-    shGB.program        = createProgram("shaders/fullscreen.vert", "shaders/gbonly.frag");
+    //shGB.program        = createProgram("shaders/fullscreen.vert", "shaders/gbonly.frag");
+    shGB.program        = createProgram("shaders/fullscreen.vert", "shaders/passthrough.frag");
     shComposite.program = createProgram("shaders/fullscreen.vert", "shaders/composite-demo.frag");
 
     // Pre-set texel size uniforms (values persist in the program object).
