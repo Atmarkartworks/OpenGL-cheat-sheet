@@ -7,7 +7,9 @@ uniform sampler2D uBlur;  // GB-only color-shifted image
 
 void main() {
     vec3 blurred = texture(uInput, vUV).rgb;
-    vec3 gbOnly  = texture(uBlur,  vUV).rgb;
-    // Blend: blur base at 60% + GB-only overlay at 80% (additive tint)
-    FragColor = vec4(blurred * 0.6 + gbOnly * 0.8, 1.0);
+    vec4 gb      = texture(uBlur,  vUV);
+
+    // Overlay GB tint only where source is non-black (mask is stored in gb.a).
+    vec3 color = blurred + gb.rgb * gb.a;
+    FragColor = vec4(color, 1.0);
 }
